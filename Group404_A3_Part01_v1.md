@@ -54,7 +54,7 @@ The Crypto Wallet Management API is designed to empower users of 3040Crypto by e
   - `fiatCurrency`: The fiat currency code to convert the crypto balance into
 - Example
   - Request: 
-    ```json
+    ```
     GET /getWalletBalance?userId=user_12345&password=rand0m&walletName=MyCryptoWallet&fiatCurrency=USD
     ```
   - Response:
@@ -90,7 +90,7 @@ The Crypto Wallet Management API is designed to empower users of 3040Crypto by e
   - `endDate`: The end date for the transaction history period
 - Example
   - Request: 
-    ```json
+    ```
     GET /getTransactionHistory?userId=user_12345&password=rand0m&walletName=MyCryptoWallet&transactionType=send&startDate=2023-01-01&endDate=2023-03-01
     ```
   - Response:
@@ -106,7 +106,7 @@ The Crypto Wallet Management API is designed to empower users of 3040Crypto by e
           "amount": 1.0,
           "currency": "BTC",
           "date": "2023-01-02",
-          "recipient": "wallet_3040
+          "recipient": "wallet_3040"
         }
       ]
     }
@@ -141,7 +141,7 @@ The primary resources managed by this API are:
   {
     "transactionId": "string",
     "walletId": "string",
-    "type": "string", // "send" or "receive"
+    "type": "string",
     "amount": "number",
     "currency": "string",
     "date": "string"
