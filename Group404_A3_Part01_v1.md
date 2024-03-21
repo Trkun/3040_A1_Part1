@@ -1,143 +1,116 @@
 # Crypto Wallet Management API
 
+Authors: `Arshpreet Buttar, Jay Dodhiawala, Rui Zhang (Group 404)`
+
 ## API Description
 
-The Crypto Wallet Management API is designed to empower users of 3040Crypto by enabling seamless management of their cryptocurrency wallets. This API allows users to create new wallets, check balances, and view their transaction history with ease.
+The Crypto Wallet Management API is designed to empower users of 3040Crypto by enabling seamless management of their cryptocurrency wallets. This API allows users to create new wallets, check balances, and view their transaction history with ease
 
 ## Endpoints with Parameters
 
-#### 1. Create Wallet
+### 1. Create Wallet
 
-- Endpoint: /createWallet
-- Method: POST
-- Description: Allows users to create a new cryptocurrency wallet.
-- Parameters: None
-- Request Body:
-  ```json
-  {
-    "name": "string",
-    "password": "string",
-    "email": "string",
-    "userName": "string",
-    "walletName": "string"
-  }
-  ```
-- Response:
-  ```json
-  {
-    "walletId": "string",
-    "message": "Wallet created successfully."
-  }
-  ```
+- **Endpoint**: `/createWallet`
+- **Method**: `POST`
+- **Description**:  `Creates a new cryptocurrency wallet for the user with custom security settings`
+- **Parameters**:
+  - `userId`: A unique identifier for the user creating the wallet
+  - `password`: A unique password for this user
+  - `currency`: The primary cryptocurrency type for the wallet
+  - `walletName`: The name the user wishes to give to their new wallet
+  - `enable2FA`: A boolean value indicating whether two-factor authentication should be enabled for added security
 
-#### example
+- Example
 
-- Request: `POST /createWallet`
-  ```json
-  Content-Type: application/json
-  {
-  "name": "Tom Cruse",
-  "password": "i_love_tome_cruse",
-  "email":"tomcruse@xyz.com",
-  "userName": "tommy",
-  "walletName": "tom"
-  }
-  ```
-- Response:
+  - Request: `POST /createWallet`
+    ```json
+    {
+      "userId": "user_12345",
+      "password": "rand0m",
+      "walletName": "MyCryptoWallet",
+      "currency": "BTC",
+      "enable2FA": true
+    }
+    ```
+  - Response:
 
-  ```json
-  {
-    "walletId": "30403040",
-    "message": "Wallet created successfully."
-  }
-  ```
+    ```json
+    {
+      "walletId": 30403040,
+      "message": "Wallet created successfully",
+      "security": "2FA enabled"
+    }
+    ```
 
-#### 2. Get Wallet Balance
+### 2. Get Wallet Balance
 
-- Endpoint: `/getWalletBalance?walletId={wallet_id}`
-- Method: GET
-- Description: Retrieves the current balance of the specified wallet.
-- Parameters: walletId: The unique identifier of the wallet.
-- Response:
-  ```json
-  {
-    "walletBalance": [
-      {
-        "currency": "string",
-        "balance": "number"
-      }
-    ]
-  }
-  ```
+- Endpoint: `/getWalletBalance`
+- Method: `GET`
+- Description: `Retrieves the balance of the specified wallet in both the primary currency and the equivalent value in a specified fiat currency`
+- Parameters:
+  - `userId`: The unique identifier of the user
+  - `password`: The unique password for this user
+  - `walletName`: The name of the wallet user wants balance of
+  - `fiatCurrency`: The fiat currency code to convert the crypto balance into
+- Example
+  - Request: 
+    ```json
+    GET /getWalletBalance?userId=user_12345&password=rand0m&walletName=MyCryptoWallet&fiatCurrency=USD
+    ```
+  - Response:
+    ```json
+    {
+      "walletId": 30403040,
+      "message": "Wallet balance retrieved successfully",
+      "security": "2FA enabled",
+      "walletBalance": [
+        {
+          "currency": "USD",
+          "balance": 500
+        },
+        {
+          "currency": "BTC",
+          "balance": 0.000015
+        }
+      ]
+    }
+    ```
 
-#### example
+### 3. Get Transaction History
 
-- Request: `GET /getWalletBalance?walletId=30403040`
-- Response:
-  ```json
-  {
-    "walletBalance": [
-      {
-        "currency": "BTC",
-        "balance": 1000
-      },
-      {
-        "currency": "ETH",
-        "balance": 500
-      },
-      {
-        "balance": 200,
-        "currency": "LTC"
-      }
-    ]
-  }
-  ```
-
-#### 3. Get Transaction History
-
-- Endpoint: `/getTransactionHistory?walletId={wallet_id}`
-- Method: GET
-- Description: Fetches a list of all transactions for a specified wallet.
-- Parameters: walletId: The unique identifier of the wallet.
-- Response:
-  ```json
-  {
-    "transactions": [
-      {
-        "transactionId": "string",
-        "type": "string",
-        "amount": "number",
-        "currency": "string",
-        "date": "string"
-      }
-    ]
-  }
-  ```
-
-#### example
-
-- Request: `GET /getTransactionHistory?walletId=30403040`
-- Response:
-  ```json
-  {
-    "transactions": [
-      {
-        "transactionId": "123",
-        "type": "send",
-        "amount": 10,
-        "currency": "BTC",
-        "date": "19-03-2024"
-      },
-      {
-        "transactionId": "456",
-        "type": "received",
-        "amount": 20,
-        "currency": "ETH",
-        "date": "18-03-2024"
-      }
-    ]
-  }
-  ```
+- Endpoint: `/getTransactionHistory`
+- Method: `GET`
+- Description: `Fetches the transaction history for a specified wallet, filtered by transaction type and within a specified date range`
+- Parameters:
+  - `userId`: The unique identifier of the user
+  - `password`: The unique password for this user
+  - `walletName`: The name of the wallet user wants transaction history of
+  - `transactionType`: The type of transactions to retrieve (send or receive)
+  - `startDate`: The start date for the transaction history period
+  - `endDate`: The end date for the transaction history period
+- Example
+  - Request: 
+    ```json
+    GET /getTransactionHistory?userId=user_12345&password=rand0m&walletName=MyCryptoWallet&transactionType=send&startDate=2023-01-01&endDate=2023-03-01
+    ```
+  - Response:
+    ```json
+    {
+      "walletId": 30403040,
+      "message": "Wallet transactions retrieved successfully",
+      "security": "2FA enabled",
+      "transactions": [
+        {
+          "transactionId": "tid_225",
+          "type": "send",
+          "amount": 1.0,
+          "currency": "BTC",
+          "date": "2023-01-02",
+          "recipient": "wallet_3040
+        }
+      ]
+    }
+    ```
 
 ## Description of Resources
 
