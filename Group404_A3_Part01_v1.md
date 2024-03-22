@@ -52,7 +52,9 @@ The Crypto Wallet Management API is designed to empower users of 3040Crypto by e
   - `password`: The unique password for this user
   - `walletName`: The name of the wallet user wants balance of
   - `fiatCurrency`: The fiat currency code to convert the crypto balance into
+
 - Example
+
   - Request: 
     ```
     GET /getWalletBalance?userId=user_12345&password=rand0m&walletName=MyCryptoWallet&fiatCurrency=USD
@@ -88,7 +90,9 @@ The Crypto Wallet Management API is designed to empower users of 3040Crypto by e
   - `transactionType`: The type of transactions to retrieve (send or receive)
   - `startDate`: The start date for the transaction history period
   - `endDate`: The end date for the transaction history period
+
 - Example
+
   - Request: 
     ```
     GET /getTransactionHistory?userId=user_12345&password=rand0m&walletName=MyCryptoWallet&transactionType=send&startDate=2023-01-01&endDate=2023-03-01
@@ -116,34 +120,115 @@ The Crypto Wallet Management API is designed to empower users of 3040Crypto by e
 
 The primary resources managed by this API are:
 
-- Wallet: Represents a cryptocurrency wallet.
+- Wallet: Represents a user's cryptocurrency wallet, which can hold multiple types of cryptocurrencies and is secured with two-factor authentication (2FA)
 
   ```json
   {
-    "name": "string",
-    "password": "string",
-    "email": "string",
-    "userName": "string",
     "walletId": "string",
     "userId": "string",
+    "password": "string",
     "walletName": "string",
-    "walletBalance": [
-      {
-        "currency": "string",
-        "balance": "number"
-      }
-    ]
+    "balance": "number",
+    "currency": "string",
+    "enable2FA": "boolean"
   }
   ```
 
-- Transaction: Represents a transaction within a wallet.
+- Transaction: Represents a movement of cryptocurrency amount from or to a wallet. Transactions can be filtered by type and date range for detailed financial tracking.
   ```json
   {
     "transactionId": "string",
     "walletId": "string",
-    "type": "string",
+    "transactionType": "string",
     "amount": "number",
     "currency": "string",
-    "date": "string"
+    "date": "string",
+    "recipient": "string", 
+    "sender": "string"
   }
   ```
+
+- Example: a scenario where a user creates a new cryptocurrency wallet, checks their balance, and then views a transaction within their wallet.
+
+  - Step 1: Creating a New Wallet
+  A user decides to create a new cryptocurrency wallet named "MyFirstCryptoWallet" with Bitcoin (BTC) as the primary currency. The user enables two-factor authentication (2FA) for added security.
+
+    - Request: Create a new wallet
+    ```json
+    {
+    "userId": "user_67890",
+    "password": "securePass123",
+    "walletName": "MyFirstCryptoWallet",
+    "currency": "BTC",
+    "enable2FA": true
+    }
+    ```
+
+    - Response: Wallet creation confirmation
+
+    ```json
+    {
+    "walletId": 30404050,
+    "message": "Wallet created successfully",
+    "security": "2FA enabled"
+    }
+    ```
+
+  - Step 2: Checking Wallet Balance
+  After some transactions, the user wants to check the balance of "MyFirstCryptoWallet" in both BTC and its equivalent in USD.
+
+    - Request: Check wallet balance
+
+    ```
+    GET /getWalletBalance?userId=user_67890&password=securePass123&walletName=MyFirstCryptoWallet&fiatCurrency=USD
+    ```
+
+    - Response: Wallet balance in BTC and USD
+
+
+    ```json
+    {
+      "walletId": 30404050,
+      "message": "Wallet balance retrieved successfully",
+      "security": "2FA enabled",
+      "walletBalance": [
+        {
+          "currency": "USD",
+          "balance": 750
+        },
+        {
+          "currency": "BTC",
+          "balance": 0.025
+        }
+      ]
+    }
+    ```
+
+    - Step 3: Viewing Transaction History
+    The user is interested in viewing transactions sent from "MyFirstCryptoWallet" between January 1, 2023, and March 1, 2023.
+
+    - Request: Get transaction history
+
+    ```
+    GET /getTransactionHistory?userId=user_67890&password=securePass123&walletName=MyFirstCryptoWallet&transactionType=send&startDate=2023-01-01&endDate=2023-03-01
+    ```
+
+    - Response: Transaction history
+
+    ```json
+    {
+      "walletId": 30404050,
+      "message": "Wallet transactions retrieved successfully",
+      "security": "2FA enabled",
+      "transactions": [
+        {
+          "transactionId": "tid_330",
+          "type": "send",
+          "amount": 0.005,
+          "currency": "BTC",
+          "date": "2023-01-15",
+          "recipient": "wallet_3050"
+        }
+      ]
+    }
+    ```
